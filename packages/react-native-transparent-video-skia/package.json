@@ -1,0 +1,58 @@
+{
+  "name": "react-native-transparent-video-skia",
+  "version": "0.1.0",
+  "description": "Transparent (alpha) video playback for React Native via Skia — plays alpha-packed H.264 MP4s that work on every iOS/Android hardware decoder. Includes a CLI to pack ProRes 4444 exports.",
+  "license": "MIT",
+  "author": "LucaL1fe",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LucaL1fe/react-native-transparent-video-skia.git",
+    "directory": "packages/react-native-transparent-video-skia"
+  },
+  "homepage": "https://lucal1fe.github.io/react-native-transparent-video-skia/",
+  "keywords": [
+    "react-native",
+    "expo",
+    "skia",
+    "transparent-video",
+    "alpha",
+    "animation",
+    "mascot",
+    "webp-alternative",
+    "gif-alternative"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "cli",
+    "src"
+  ],
+  "bin": {
+    "pack-alpha-video": "cli/pack-alpha-video.mjs"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "@shopify/react-native-skia": ">=1.5.0",
+    "expo-asset": "*",
+    "react": ">=18",
+    "react-native": ">=0.74",
+    "react-native-reanimated": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo-asset": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@shopify/react-native-skia": "^2.2.12",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "react-native": "^0.86.0",
+    "react-native-reanimated": "^4.0.0",
+    "typescript": "^5.6.0"
+  }
+}

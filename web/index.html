@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alpha Video Packer — transparent video for React Native</title>
+    <meta
+      name="description"
+      content="Convert an alpha-channel video (ProRes 4444, VP9 WebM) into an alpha-packed H.264 MP4 for react-native-transparent-video-skia — entirely in your browser."
+    />
+    <!-- Must load FIRST: registers a service worker that injects COOP/COEP
+         headers (GitHub Pages can't set them), enabling SharedArrayBuffer for
+         the multithreaded ffmpeg core. Reloads the page once on first visit. -->
+    <script src="./coi-serviceworker.min.js"></script>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Alpha Video Packer</h1>
+      <p class="tagline">
+        Turn a video with transparency into an <strong>alpha-packed MP4</strong> that plays on every
+        iOS/Android hardware decoder — converted 100% in your browser, nothing is uploaded.
+      </p>
+      <nav>
+        <a href="https://github.com/LucaL1fe/react-native-transparent-video-skia" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://www.npmjs.com/package/react-native-transparent-video-skia" target="_blank" rel="noreferrer">npm</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="error-banner" class="error hidden"></section>
+
+      <!-- idle / drop -->
+      <section id="drop-section">
+        <div id="drop-zone" tabindex="0" role="button" aria-label="Choose or drop a video file">
+          <p class="drop-big">Drop your video here</p>
+          <p class="drop-small">or click to choose a file</p>
+          <p class="drop-formats">ProRes 4444 .mov (DaVinci: ✅ Export Alpha) · VP9 .webm with alpha · .mkv · .avi</p>
+          <input id="file-input" type="file" accept=".mov,.webm,.mkv,.avi,video/*" hidden />
+        </div>
+        <p id="engine-status" class="muted">loading ffmpeg engine…</p>
+      </section>
+
+      <!-- settings -->
+      <section id="settings-section" class="hidden">
+        <h2 id="file-title"></h2>
+        <p id="file-meta" class="muted"></p>
+
+        <div class="field">
+          <label>Output resolution</label>
+          <div id="res-presets" class="chips"></div>
+          <div class="inline">
+            <input id="width-input" type="number" min="16" step="2" />
+            <span class="muted">px wide — height follows aspect ratio</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Frame rate</label>
+          <div id="fps-presets" class="chips"></div>
+          <div class="inline">
+            <input id="fps-input" type="number" min="1" max="60" step="1" value="30" />
+            <span class="muted">fps — mascot loops rarely need more than 24</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="crf-input">Quality (CRF <span id="crf-value">18</span>)</label>
+          <input id="crf-input" type="range" min="14" max="28" step="1" value="18" />
+          <span class="muted">lower = better quality, bigger file</span>
+        </div>
+
+        <p id="size-estimate" class="muted"></p>
+
+        <div class="actions">
+          <button id="convert-btn" class="primary">Convert</button>
+          <button id="cancel-btn">Choose another file</button>
+        </div>
+      </section>
+
+      <!-- converting -->
+      <section id="progress-section" class="hidden">
+        <h2>Converting…</h2>
+        <progress id="progress-bar" max="1" value="0"></progress>
+        <p id="progress-text" class="muted"></p>
+        <p id="st-note" class="muted hidden">
+          ⚠ single-threaded fallback active (no SharedArrayBuffer in this context) — this will be slower.
+        </p>
+      </section>
+
+      <!-- result -->
+      <section id="result-section" class="hidden">
+        <h2>Done ✔</h2>
+        <div class="actions">
+          <a id="download-btn" class="primary button" download>Download packed MP4</a>
+          <button id="again-btn">Convert another</button>
+        </div>
+        <p id="result-meta" class="muted"></p>
+
+        <h3>Live transparency preview</h3>
+        <p class="muted">
+          This preview unpacks the MP4 with the exact same math as the React Native Skia shader —
+          if it looks right here, it looks right in your app.
+        </p>
+        <div id="preview-wrap" class="checkerboard">
+          <canvas id="preview-canvas"></canvas>
+        </div>
+        <div id="bg-swatches" class="chips">
+          <button data-bg="checker" class="chip active">checker</button>
+          <button data-bg="#ffffff" class="chip">white</button>
+          <button data-bg="#1e1e2e" class="chip">dark</button>
+          <button data-bg="#2e8b57" class="chip">green</button>
+        </div>
+
+        <h3>Use it in React Native</h3>
+        <pre id="snippet"></pre>
+        <button id="copy-snippet">Copy snippet</button>
+      </section>
+    </main>
+
+    <footer>
+      <p class="muted">
+        Runs entirely client-side via <a href="https://github.com/ffmpegwasm/ffmpeg.wasm" target="_blank" rel="noreferrer">ffmpeg.wasm</a>
+        (FFmpeg + x264, GPL — see <a href="https://github.com/LucaL1fe/react-native-transparent-video-skia/blob/main/LICENSE" target="_blank" rel="noreferrer">LICENSE</a>).
+        Best on desktop; browser memory limits apply to very large files.
+      </p>
+    </footer>
+  </body>
+</html>
