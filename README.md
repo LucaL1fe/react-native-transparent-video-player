@@ -4,7 +4,7 @@
 
 **Transparent (alpha-channel) video for React Native — as a plain H.264 MP4 that plays on every iOS and Android hardware decoder.**
 
-No codec-alpha support needed, no giant animated WebP/GIF files, no per-frame CPU decoding. A ~70-line Skia component plays an "alpha-packed" MP4 and recombines color + alpha on the GPU.
+No codec-alpha support needed, no giant animated WebP/GIF files, no per-frame CPU decoding. One `<TransparentVideo>` component plays an "alpha-packed" MP4 and recombines color + alpha on the GPU — via a Skia shader on iOS and a native ExoPlayer + OpenGL view on Android.
 
 ## Quick start
 
@@ -20,6 +20,8 @@ npx pack-alpha-video hero-4444.mov
 ```bash
 npx expo install react-native-transparent-video-player @shopify/react-native-skia react-native-reanimated
 ```
+
+> **Native rebuild required:** the Android side is a native Expo module, so after installing (or upgrading from ≤ 0.2.0) rebuild your development build — `npx expo prebuild` + a new dev client / EAS build. Not available in Expo Go (neither is Skia). iOS adds no native code from this package.
 
 **3. Play it:**
 
@@ -77,7 +79,7 @@ Real measurement — the same 900×900 transparent character animation, exported
 
 Category by category:
 
-| | Alpha-packed MP4 + Skia | GIF | Animated WebP | APNG | Lottie | HEVC/VP9 codec-alpha |
+| | Alpha-packed MP4 (this package) | GIF | Animated WebP | APNG | Lottie | HEVC/VP9 codec-alpha |
 |---|---|---|---|---|---|---|
 | **File size** | ✅ Inter-frame H.264 compression (10× smaller than WebP above) | ❌ Huge | ❌ Mostly per-frame, large | ❌ Largest | ✅ Tiny — but vector-only | ✅ Small |
 | **Color + alpha** | ✅ 24-bit color, 8-bit alpha | ❌ 256 colors, 1-bit alpha | ✅ | ✅ | ✅ | ✅ |
@@ -105,7 +107,7 @@ The packed MP4 is a completely normal H.264 video, **twice as tall** as your ani
 └──────────────┘
 ```
 
-At render time a Skia runtime shader samples the color from the top half and the alpha from the bottom half of the same frame and recombines them on the GPU:
+At render time a GPU shader samples the color from the top half and the alpha from the bottom half of the same frame and recombines them — a Skia RuntimeEffect on iOS, a `samplerExternalOES` GLSL shader on Android:
 
 ```glsl
 half4 main(float2 xy) {
