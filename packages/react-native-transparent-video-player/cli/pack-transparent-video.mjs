@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * pack-alpha-video — convert any video with an alpha channel (ProRes 4444,
+ * pack-transparent-video — convert any video with an alpha channel (ProRes 4444,
  * VP9/VP8 WebM, PNG/QTRLE/FFV1/Ut Video in .mov/.mkv/.avi) into an
  * "alpha-packed" MP4 for <TransparentVideo>.
  *
@@ -13,7 +13,7 @@
  * Works on Windows, macOS and Linux; needs ffmpeg + ffprobe in PATH.
  *
  * Usage:
- *   npx pack-alpha-video <input.mov> [more.webm ...] [options]
+ *   npx pack-transparent-video <input.mov> [more.webm ...] [options]
  *
  * Options:
  *   -o, --out-dir <dir>    output directory                       (default: cwd)
@@ -74,7 +74,7 @@ const { values, positionals: inputs } = parsed;
 
 if (values.help || inputs.length === 0) {
   console.log(
-    `Usage: pack-alpha-video <input-with-alpha> [...] [options]
+    `Usage: pack-transparent-video <input-with-alpha> [...] [options]
   -o, --out-dir <dir>    output directory                    (default: cwd)
       --fps <n>          output frame rate                   (default: 24)
       --quality <0-100>  quality %, 75 ≈ visually lossless   (default: 75)

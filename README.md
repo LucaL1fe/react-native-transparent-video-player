@@ -13,7 +13,7 @@ No codec-alpha support needed, no giant animated WebP/GIF files, no per-frame CP
 **1. Pack your video** — any video with an alpha channel (e.g. ProRes 4444), any resolution (ffmpeg required, see below):
 
 ```bash
-npx pack-alpha-video hero-4444.mov
+npx pack-transparent-video hero-4444.mov
 # → hero-packed.mp4
 ```
 
@@ -41,10 +41,10 @@ That's it — the video renders with real transparency over whatever is behind i
 
 > **Export tip:** deliver **ProRes 4444 with the alpha channel enabled** from your editor or motion tool, at display resolution (e.g. 900×900), 24–30 fps. Every professional tool can do this.
 
-## The `pack-alpha-video` CLI
+## The `pack-transparent-video` CLI
 
 ```bash
-npx pack-alpha-video <input-with-alpha> [more inputs ...] [options]
+npx pack-transparent-video <input-with-alpha> [more inputs ...] [options]
 ```
 
 | Option | Default | What it does |

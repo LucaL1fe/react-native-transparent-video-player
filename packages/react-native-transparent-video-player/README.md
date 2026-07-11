@@ -19,8 +19,8 @@ import { TransparentVideo } from 'react-native-transparent-video-player';
 Pack any video with an alpha channel (ProRes 4444, VP9 WebM, …) with the bundled cross-platform CLI (needs ffmpeg in PATH):
 
 ```bash
-npx pack-alpha-video hero-4444.mov            # sensible defaults: 24 fps, quality 75%
-npx pack-alpha-video hero-4444.mov --scale 50 --quality 60
+npx pack-transparent-video hero-4444.mov            # sensible defaults: 24 fps, quality 75%
+npx pack-transparent-video hero-4444.mov --scale 50 --quality 60
 ```
 
 Renders via Skia on iOS and a native ExoPlayer + OpenGL view on Android (v0.3.0+) — no `minSdkVersion` override needed. Android needs `expo-modules-core` (built into every Expo app; bare RN: `npx install-expo-modules`) and a development-build rebuild after install (not Expo Go).
