@@ -6,15 +6,12 @@
 
 No codec-alpha support needed, no giant animated WebP/GIF files, no per-frame CPU decoding. A ~70-line Skia component plays an "alpha-packed" MP4 and recombines color + alpha on the GPU.
 
-**🎬 Convert your video in the browser (nothing is uploaded):**
-👉 **https://lucal1fe.github.io/react-native-transparent-video-skia/**
-
 ## Quick start
 
-**1. Pack your video** — drag your alpha video (e.g. a DaVinci Resolve ProRes 4444 export) into the [browser converter](https://lucal1fe.github.io/react-native-transparent-video-skia/), or locally with ffmpeg installed:
+**1. Pack your video** — works with any video that has an alpha channel and any resolution (ffmpeg required, see below):
 
 ```bash
-npx pack-alpha-video hero-4444.mov --width 900 --fps 24
+npx pack-alpha-video hero-4444.mov
 # → hero-packed.mp4
 ```
 
@@ -40,6 +37,31 @@ That's it — the video renders with real transparency over whatever is behind i
 
 > **Exporting from DaVinci Resolve:** Deliver → QuickTime, Codec **Apple ProRes 4444**, ✅ **Export Alpha**, resolution = display size (e.g. 900×900), 24–30 fps.
 
+## The `pack-alpha-video` CLI
+
+```bash
+npx pack-alpha-video <input-with-alpha> [more inputs ...] [options]
+```
+
+| Option | Default | What it does |
+|---|---|---|
+| `--fps <n>` | `24` | Output frame rate. 24 looks perfectly smooth for animations; 30+ only adds file size. |
+| `--scale <percent>` | `100` | Resize to a percentage of the source size (e.g. `--scale 50` halves width and height). |
+| `--quality <0-100>` | `75` | Output quality in percent. 75 ≈ visually lossless; lower = smaller file. |
+| `-o, --out-dir <dir>` | cwd | Where to write `<name>-packed.mp4`. |
+| `--width <px>` | — | Alternative to `--scale`: resize to an exact pixel width (keeps aspect ratio). |
+| `--crf <n>` | — | Advanced: raw x264 CRF value, overrides `--quality`. |
+
+**Supported inputs** — any video with a real alpha channel, at any resolution (odd dimensions are handled automatically):
+
+- **ProRes 4444** `.mov` (the DaVinci Resolve / After Effects route — recommended)
+- **VP9 / VP8** `.webm` with alpha
+- `.mov`/`.mkv`/`.avi` with an alpha-capable codec: **PNG, QuickTime Animation (QTRLE), FFV1, Ut Video**
+- Files *without* alpha (plain H.264/HEVC exports) are rejected with a clear message — note that HEVC-with-alpha is not supported; use ProRes 4444 or VP9 WebM instead.
+
+**Requirements:** Node.js and ffmpeg in your PATH — works on **Windows, macOS and Linux**
+(macOS: `brew install ffmpeg` · Windows: `winget install ffmpeg` · Linux: `sudo apt install ffmpeg`).
+
 ## Why this beats GIF and animated WebP
 
 Real measurement — the same 900×900 transparent character animation, exported three ways:
@@ -62,7 +84,7 @@ Category by category:
 | **Rendered from real footage / 3D / hand animation** | ✅ Any video source | ✅ | ✅ | ✅ | ❌ Vector animations only | ✅ |
 | **Playback control** | ✅ `paused` accepts a Reanimated `SharedValue` | ❌ | ❌ | ❌ | ✅ | ✅ |
 
-**Honest trade-offs:** you add `@shopify/react-native-skia` + `react-native-reanimated` as dependencies, your asset needs a one-time packing step (that's what the converter is for), and it's not a drop-in `<Image>` replacement.
+**Honest trade-offs:** you add `@shopify/react-native-skia` + `react-native-reanimated` as dependencies, your asset needs a one-time packing step, and it's not a drop-in `<Image>` replacement.
 
 ## How it works
 
@@ -100,23 +122,6 @@ Because the transport is plain `yuv420p` H.264, the OS hardware decoder does all
 | `paused` | `boolean \| SharedValue<boolean>` | Pause playback; accepts a Reanimated shared value for UI-thread control. |
 | `style` | `StyleProp<ViewStyle>` | Extra styles for the canvas. |
 
-### `pack-alpha-video` CLI
-
-```
-npx pack-alpha-video <input-with-alpha.mov> [more ...] [options]
-  -o, --out-dir <dir>   output directory        (default: cwd)
-      --fps <n>         output frame rate       (default: 24 — smooth for animations, smaller than 30)
-      --crf <n>         H.264 quality           (default: 18 = visually lossless, lower = better)
-      --width <px>      downscale width, keeps aspect
-```
-
-Runs on **Windows, macOS and Linux** — needs Node.js and ffmpeg in your PATH (macOS: `brew install ffmpeg`, Windows: `winget install ffmpeg`, Linux: `apt install ffmpeg`). Or skip the install entirely and use the [browser converter](https://lucal1fe.github.io/react-native-transparent-video-skia/) — it runs the same ffmpeg pipeline via WebAssembly, entirely client-side. The CLI is the recommended fallback for very large files that exceed the browser's wasm memory limit.
-
-## Repo layout
-
-- [`packages/react-native-transparent-video-skia`](packages/react-native-transparent-video-skia) — the npm package (component + CLI)
-- [`web/`](web) — the browser converter (Vite + ffmpeg.wasm), deployed to GitHub Pages
-
 ## License
 
-Code in this repository is [MIT](LICENSE). The hosted converter ships a WebAssembly FFmpeg build with x264 enabled (GPL) — see the third-party notices in [LICENSE](LICENSE).
+[MIT](LICENSE)

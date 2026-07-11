@@ -2,12 +2,10 @@
   "name": "react-native-transparent-video-skia-monorepo",
   "private": true,
   "workspaces": [
-    "packages/*",
-    "web"
+    "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "dev": "npm run dev --workspace web"
+    "build": "npm run build --workspaces --if-present"
   },
   "allowScripts": {
     "esbuild@0.25.12": true

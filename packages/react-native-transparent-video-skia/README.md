@@ -16,12 +16,12 @@ import { TransparentVideo } from 'react-native-transparent-video-skia';
 />
 ```
 
-Pack your alpha video (e.g. a DaVinci ProRes 4444 export) in the browser — nothing is uploaded:
-**https://lucal1fe.github.io/react-native-transparent-video-skia/** — or with the bundled CLI:
+Pack any alpha video (DaVinci ProRes 4444 export, VP9 WebM, …) with the bundled cross-platform CLI (needs ffmpeg in PATH):
 
 ```bash
-npx pack-alpha-video hero-4444.mov --width 900 --fps 24
+npx pack-alpha-video hero-4444.mov            # sensible defaults: 24 fps, quality 75%
+npx pack-alpha-video hero-4444.mov --scale 50 --quality 60
 ```
 
-Full docs, format explanation, and the GIF/WebP comparison:
+Full docs, CLI options, format explanation, and the GIF/WebP comparison:
 **https://github.com/LucaL1fe/react-native-transparent-video-skia**

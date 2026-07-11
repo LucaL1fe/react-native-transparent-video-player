@@ -19,16 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-Third-party notices
-
-The hosted converter web app (web/) ships a WebAssembly build of FFmpeg
-(ffmpeg.wasm, https://github.com/ffmpegwasm/ffmpeg.wasm) compiled with
-libx264. FFmpeg is licensed under the LGPL/GPL; the included build enables
-GPL components (x264), so the deployed converter binary is distributed under
-the terms of the GNU General Public License v2 or later
-(https://www.ffmpeg.org/legal.html, https://www.videolan.org/developers/x264.html).
-The source code for FFmpeg and x264 is available at the URLs above. The
-repository's own source code remains MIT-licensed.
