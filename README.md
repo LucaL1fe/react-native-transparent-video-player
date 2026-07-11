@@ -42,7 +42,7 @@ That's it — the video renders with real transparency over whatever is behind i
 
 ## Why this beats GIF and animated WebP
 
-Real measurement — the same 900×900 mascot idle loop, exported three ways:
+Real measurement — the same 900×900 transparent character animation, exported three ways:
 
 | Format | Size |
 |---|---|

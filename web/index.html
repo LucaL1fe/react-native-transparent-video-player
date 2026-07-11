@@ -35,7 +35,10 @@
         <div id="drop-zone" tabindex="0" role="button" aria-label="Choose or drop a video file">
           <p class="drop-big">Drop your video here</p>
           <p class="drop-small">or click to choose a file</p>
-          <p class="drop-formats">ProRes 4444 .mov (DaVinci: ✅ Export Alpha) · VP9 .webm with alpha · .mkv · .avi</p>
+          <p class="drop-formats">
+            Works with any video that has an alpha channel: ProRes 4444 .mov (DaVinci: ✅ Export Alpha),
+            VP9/VP8 .webm, or .mkv/.avi with an alpha-capable codec (PNG, QTRLE, FFV1, Ut Video)
+          </p>
           <input id="file-input" type="file" accept=".mov,.webm,.mkv,.avi,video/*" hidden />
         </div>
         <p id="engine-status" class="muted">loading ffmpeg engine…</p>
@@ -60,7 +63,7 @@
           <div id="fps-presets" class="chips"></div>
           <div class="inline">
             <input id="fps-input" type="number" min="1" max="60" step="1" value="30" />
-            <span class="muted">fps — mascot loops rarely need more than 24</span>
+            <span class="muted">fps — short transparent animations rarely need more than 24</span>
           </div>
         </div>
 
