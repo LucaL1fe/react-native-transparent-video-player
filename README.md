@@ -1,5 +1,7 @@
 # react-native-transparent-video-player
 
+https://github.com/user-attachments/assets/bfec8c89-5c0a-4189-991d-bfbb36fc742d
+
 > ⭐ **If this project helps you, a star would make my day** — it keeps the project going and helps others find it!
 
 **Transparent (alpha-channel) video for React Native — as a plain H.264 MP4 that plays on every iOS and Android hardware decoder.**
