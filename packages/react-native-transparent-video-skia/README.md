@@ -23,5 +23,7 @@ npx pack-alpha-video hero-4444.mov            # sensible defaults: 24 fps, quali
 npx pack-alpha-video hero-4444.mov --scale 50 --quality 60
 ```
 
+⚠ Android requires the app to be built with `minSdkVersion` ≥ 26 (Expo: `expo-build-properties`) — below that, Skia compiles video support out and throws on every device.
+
 Full docs, CLI options, format explanation, and the GIF/WebP comparison:
 **https://github.com/LucaL1fe/react-native-transparent-video-skia**

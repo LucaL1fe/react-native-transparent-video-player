@@ -87,6 +87,11 @@ Category by category:
 
 **Honest trade-offs:** you add `@shopify/react-native-skia` + `react-native-reanimated` as dependencies, your asset needs a one-time packing step, and it's not a drop-in `<Image>` replacement.
 
+> ⚠ **Android: your app must be built with `minSdkVersion` 26 or higher** (Android 8.0, 2017). Skia's video support is compiled out below API 26 — the app then throws `Skia Videos are only support on API 26 and above` **on every device, even brand-new ones**. In Expo, set it via `expo-build-properties`:
+> ```jsonc
+> ["expo-build-properties", { "android": { "minSdkVersion": 26 } }]
+> ```
+
 ## How it works
 
 The packed MP4 is a completely normal H.264 video, **twice as tall** as your animation:
