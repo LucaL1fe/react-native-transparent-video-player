@@ -29,30 +29,39 @@ private const val VERTICES_POS_OFFSET = 0
 private const val VERTICES_UV_OFFSET = 3
 private const val GL_TEXTURE_EXTERNAL_OES = 0x8D65
 
+// The halves-split must happen in CONTENT space and only then go through the
+// SurfaceTexture transform (uSTMatrix): decoders pad the buffer to 16-row
+// alignment (e.g. 1800 -> 1808), so the matrix carries a crop scale — applying
+// the split after the transform misaligns the alpha matte by several pixels.
 private const val VERTEX_SHADER = """
 uniform mat4 uMVPMatrix;
 uniform mat4 uSTMatrix;
 attribute vec4 aPosition;
 attribute vec4 aTextureCoord;
-varying vec2 vTextureCoord;
+varying vec2 vColorCoord;
+varying vec2 vAlphaCoord;
 void main() {
   gl_Position = uMVPMatrix * aPosition;
-  vTextureCoord = (uSTMatrix * aTextureCoord).xy;
+  // SurfaceTexture content space: t=0 is the image BOTTOM. The packed video
+  // shows color on top (t in [0.5, 1]) and the alpha matte below (t in [0, 0.5]).
+  vColorCoord = (uSTMatrix * vec4(aTextureCoord.x, 0.5 + aTextureCoord.y * 0.5, 0.0, 1.0)).xy;
+  vAlphaCoord = (uSTMatrix * vec4(aTextureCoord.x, aTextureCoord.y * 0.5, 0.0, 1.0)).xy;
 }
 """
 
 // Packed layout: premultiplied color in the top half, alpha matte in the
-// bottom half (in ST-transformed coordinates). rgb is ALREADY premultiplied
-// by the pack-alpha-video CLI — pass it through; multiplying by alpha again
+// bottom half (content space). rgb is ALREADY premultiplied by the
+// pack-alpha-video CLI — pass it through; multiplying by alpha again
 // would darken antialiased edges.
 private const val FRAGMENT_SHADER = """
 #extension GL_OES_EGL_image_external : require
 precision mediump float;
-varying vec2 vTextureCoord;
+varying vec2 vColorCoord;
+varying vec2 vAlphaCoord;
 uniform samplerExternalOES sTexture;
 void main() {
-  vec4 color  = texture2D(sTexture, vec2(vTextureCoord.x, vTextureCoord.y / 2.0));
-  float alpha = texture2D(sTexture, vec2(vTextureCoord.x, 0.5 + vTextureCoord.y / 2.0)).r;
+  vec4 color  = texture2D(sTexture, vColorCoord);
+  float alpha = texture2D(sTexture, vAlphaCoord).r;
   gl_FragColor = vec4(color.rgb, alpha);
 }
 """
