@@ -87,12 +87,11 @@ Category by category:
 
 **Honest trade-offs:** you add `@shopify/react-native-skia` + `react-native-reanimated` as dependencies, your asset needs a one-time packing step, and it's not a drop-in `<Image>` replacement.
 
-> ⚠ **Android: your app must be built with `minSdkVersion` 26 or higher** (Android 8.0, 2017). Skia's video support is compiled out below API 26 — the app then throws `Skia Videos are only support on API 26 and above` **on every device, even brand-new ones**. In Expo, set it via `expo-build-properties`:
-> ```jsonc
-> ["expo-build-properties", { "android": { "minSdkVersion": 26 } }]
-> ```
-
 ## How it works
+
+**Platform split (v0.3.0+):** iOS renders through Skia (a RuntimeEffect shader on the GPU). **Android uses a native ExoPlayer + OpenGL view** — Skia's video decoding is bypassed entirely there, because its GPU frame import only understands RGBA buffers while Android hardware decoders emit vendor YUV formats (frames render black on many devices, e.g. recent Samsung flagships). The native view uses the same decoder→`SurfaceTexture`→`samplerExternalOES` pipeline every Android video player relies on, so it works on every device and GPU. No `minSdkVersion` override is needed (module minSdk 24).
+
+Android consumers need `expo-modules-core` — already present in every Expo app; bare React Native apps can add it with `npx install-expo-modules`.
 
 The packed MP4 is a completely normal H.264 video, **twice as tall** as your animation:
 
@@ -127,7 +126,8 @@ Because the transport is plain `yuv420p` H.264, the OS hardware decoder does all
 | `height` | `number` | Display height (= half the packed video's pixel height). |
 | `loop` | `boolean` | Loop playback (default `true`). Set `false` for one-shot animations. |
 | `paused` | `boolean \| SharedValue<boolean>` | Pause playback; accepts a Reanimated shared value for UI-thread control. |
-| `style` | `StyleProp<ViewStyle>` | Extra styles for the canvas. |
+| `onEnd` | `() => void` | Fires when a non-looping video finishes. Currently Android-only (native player event). |
+| `style` | `StyleProp<ViewStyle>` | Extra styles for the view. |
 
 ## License
 
