@@ -21,7 +21,7 @@ npx pack-alpha-video hero-4444.mov
 npx expo install react-native-transparent-video-player @shopify/react-native-skia react-native-reanimated
 ```
 
-> **Native rebuild required:** the Android side is a native Expo module, so after installing (or upgrading from ≤ 0.2.0) rebuild your development build — `npx expo prebuild` + a new dev client / EAS build. Not available in Expo Go (neither is Skia). iOS adds no native code from this package.
+> **Native rebuild required:** the Android side is a native Expo module, so after installing it rebuild your development build — `npx expo prebuild` + a new dev client / EAS build. Not available in Expo Go (neither is Skia). iOS adds no native code from this package.
 
 **3. Play it:**
 
@@ -132,10 +132,6 @@ Because the transport is plain `yuv420p` H.264, the OS hardware decoder does all
 | `paused` | `boolean \| SharedValue<boolean>` | Pause playback; accepts a Reanimated shared value for UI-thread control. |
 | `onEnd` | `() => void` | Fires when a non-looping video finishes. Currently Android-only (native player event). |
 | `style` | `StyleProp<ViewStyle>` | Extra styles for the view. |
-
-## Renamed package
-
-This project was previously published as `react-native-transparent-video-skia` (≤ 0.2.0, iOS/Skia-only playback). It was renamed when Android playback moved to a native ExoPlayer + OpenGL view — Skia now only powers the iOS side.
 
 ## License
 
