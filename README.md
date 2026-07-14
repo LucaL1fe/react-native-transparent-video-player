@@ -133,6 +133,8 @@ Because the transport is plain `yuv420p` H.264, the OS hardware decoder does all
 | `loop` | `boolean` | Loop playback (default `true`). Set `false` for one-shot animations. |
 | `paused` | `boolean \| SharedValue<boolean>` | Pause playback; accepts a Reanimated shared value for UI-thread control. |
 | `onEnd` | `() => void` | Fires when a non-looping video finishes. Currently Android-only (native player event). |
+| `onFirstFrame` | `() => void` | Fires when the view first has visible content: once per mount on iOS, once per source prepare on Android. |
+| `playKey` | `number` | Change this value (e.g. increment a counter) to restart the current source from frame 0 — the way to replay a finished one-shot clip without remounting. Changing `source` restarts playback by itself, and the view keeps showing the previous video's last frame until the new source's first frame is decoded, so runtime source switches are seamless. |
 | `style` | `StyleProp<ViewStyle>` | Extra styles for the view. |
 
 ## License

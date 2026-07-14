@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
@@ -21,19 +21,34 @@ export interface TransparentVideoProps {
   paused?: SharedValue<boolean> | boolean;
   style?: StyleProp<ViewStyle>;
   /**
-   * Fires when a non-looping video finishes playing.
-   * Currently Android-only (native player event); on iOS it never fires —
-   * time-based fallbacks remain the caller's responsibility there.
+   * Fires when a non-looping video finishes playing. Native player event on
+   * iOS and Android; never fires on web (Skia path) — time-based fallbacks
+   * remain the caller's responsibility there.
    */
   onEnd?: () => void;
+  /**
+   * Fires when the view first has visible content: once per mount on iOS,
+   * once per source prepare on Android.
+   */
+  onFirstFrame?: () => void;
+  /**
+   * Change this value (e.g. increment a counter) to restart the current
+   * source from frame 0 — the way to replay a finished one-shot clip without
+   * remounting. Changing `source` restarts playback by itself; while the
+   * source is switching, the view keeps showing the previous video's last
+   * frame until the new video's first frame is decoded, so runtime switches
+   * are seamless.
+   */
+  playKey?: number;
 }
 
 /**
  * Plays an alpha-packed MP4 with real transparency.
  *
- * Platform split: iOS/web render through Skia (RuntimeEffect unpack shader);
- * Android uses a native ExoPlayer + OpenGL view (Metro resolves
- * ./TransparentVideoView to the .android implementation there).
+ * Platform split: iOS uses a native AVPlayer + Metal view, Android a native
+ * ExoPlayer + OpenGL view (Metro resolves ./TransparentVideoView to the
+ * .native implementation on both); web renders through Skia (RuntimeEffect
+ * unpack shader, the base .tsx file).
  */
 export function TransparentVideo({
   source,
@@ -43,8 +58,22 @@ export function TransparentVideo({
   paused = false,
   style,
   onEnd,
+  onFirstFrame,
+  playKey,
 }: TransparentVideoProps) {
-  const uri = useResolvedUri(source);
+  const { uri, forSource } = useResolvedUri(source);
+
+  // playKey gating: `uri` resolves asynchronously, so right after a source
+  // change there are renders where playKey has already changed while uri is
+  // still the PREVIOUS clip's. Forwarding the new playKey then would restart
+  // the outgoing video (every impl treats "playKey changed, uri unchanged"
+  // as a replay request). Latch during render — not in an effect, which
+  // would deliver the new playKey one commit AFTER the uri and re-trigger
+  // the seek — so a uri change and its playKey always land in one commit.
+  const gatedPlayKeyRef = useRef(playKey);
+  if (forSource === source) {
+    gatedPlayKeyRef.current = playKey;
+  }
 
   return (
     <TransparentVideoView
@@ -55,6 +84,8 @@ export function TransparentVideo({
       paused={paused}
       style={style}
       onEnd={onEnd}
+      onFirstFrame={onFirstFrame}
+      playKey={gatedPlayKeyRef.current}
     />
   );
 }

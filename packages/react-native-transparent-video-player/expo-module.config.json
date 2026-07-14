@@ -1,5 +1,8 @@
 {
-  "platforms": ["android"],
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["TransparentVideoModule"]
+  },
   "android": {
     "modules": ["expo.modules.transparentvideo.TransparentVideoModule"]
   }

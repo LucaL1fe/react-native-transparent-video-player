@@ -23,7 +23,7 @@ npx pack-transparent-video hero-4444.mov            # sensible defaults: 24 fps,
 npx pack-transparent-video hero-4444.mov --scale 50 --quality 60
 ```
 
-Renders via Skia on iOS and a native ExoPlayer + OpenGL view on Android (v0.3.0+) — no `minSdkVersion` override needed. Android needs `expo-modules-core` (built into every Expo app; bare RN: `npx install-expo-modules`) and a development-build rebuild after install (not Expo Go).
+Renders via a native AVPlayer + Metal view on iOS (v0.4.0+), a native ExoPlayer + OpenGL view on Android (v0.3.0+) — no `minSdkVersion` override needed — and Skia on web. Both native platforms need `expo-modules-core` (built into every Expo app; bare RN: `npx install-expo-modules`) and a development-build rebuild after install (not Expo Go). Source switches are seamless: the view holds the last frame until the new clip's first frame is decoded.
 
 Full docs, CLI options, format explanation, and the GIF/WebP comparison:
 **https://github.com/LucaL1fe/react-native-transparent-video-player**

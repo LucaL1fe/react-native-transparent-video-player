@@ -10,14 +10,16 @@ interface NativeProps {
   sourceUri: string | null;
   loop: boolean;
   paused: boolean;
+  replayNonce?: number;
   onVideoEnd?: () => void;
+  onFirstFrame?: () => void;
   style?: StyleProp<ViewStyle>;
 }
 
 const NativeView = requireNativeViewManager<NativeProps>('TransparentVideo');
 
 // The native view takes a plain boolean; bridge a Reanimated SharedValue
-// (supported for API parity with the iOS Skia path) into React state.
+// (supported for API parity with the web Skia path) into React state.
 function useResolvedPaused(paused: SharedValue<boolean> | boolean): boolean {
   const isShared = typeof paused === 'object' && paused !== null;
   const [fromShared, setFromShared] = useState(
@@ -34,9 +36,15 @@ function useResolvedPaused(paused: SharedValue<boolean> | boolean): boolean {
 }
 
 /**
- * Android implementation: native ExoPlayer + OpenGL (samplerExternalOES)
- * view. Skia's useVideo is NOT used on Android — its HardwareBuffer importer
- * cannot sample the YUV/vendor formats hardware decoders emit.
+ * Native implementation (iOS + Android), one JS wrapper for both:
+ * - Android: ExoPlayer + OpenGL (samplerExternalOES). Skia's useVideo is NOT
+ *   usable there — its HardwareBuffer importer cannot sample the YUV/vendor
+ *   formats hardware decoders emit.
+ * - iOS: AVPlayer + AVPlayerItemVideoOutput + Metal unpack shader. Replaced
+ *   the Skia canvas path, whose JS-side frame-disposal heuristics
+ *   intermittently flashed an opaque black frame on source switches.
+ * Both native views hold the last presented frame across source swaps until
+ * the new clip's first frame is decoded, so runtime switches are seamless.
  */
 export function TransparentVideoView({
   uri,
@@ -46,6 +54,8 @@ export function TransparentVideoView({
   paused,
   style,
   onEnd,
+  onFirstFrame,
+  playKey,
 }: ImplProps) {
   const pausedBool = useResolvedPaused(paused);
 
@@ -54,7 +64,9 @@ export function TransparentVideoView({
       sourceUri={uri}
       loop={loop}
       paused={pausedBool}
+      replayNonce={playKey}
       onVideoEnd={onEnd}
+      onFirstFrame={onFirstFrame}
       style={[{ width, height }, style]}
     />
   );

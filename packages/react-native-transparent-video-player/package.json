@@ -1,7 +1,7 @@
 {
   "name": "react-native-transparent-video-player",
-  "version": "0.3.2",
-  "description": "Transparent (alpha) video playback for React Native — plays alpha-packed H.264 MP4s on every iOS/Android hardware decoder. Skia-rendered on iOS, native ExoPlayer+OpenGL view on Android. Includes a CLI to pack ProRes 4444 exports.",
+  "version": "0.4.0",
+  "description": "Transparent (alpha) video playback for React Native — plays alpha-packed H.264 MP4s on every iOS/Android hardware decoder. Native AVPlayer+Metal view on iOS, native ExoPlayer+OpenGL view on Android, Skia on web. Includes a CLI to pack ProRes 4444 exports.",
   "license": "MIT",
   "author": "LucaL1fe",
   "repository": {
@@ -29,6 +29,7 @@
     "src",
     "android/build.gradle",
     "android/src",
+    "ios",
     "expo-module.config.json",
     "THIRD-PARTY-NOTICES.md"
   ],
@@ -42,10 +43,10 @@
   "peerDependencies": {
     "@shopify/react-native-skia": ">=1.5.0",
     "expo-asset": "*",
+    "expo-modules-core": "*",
     "react": ">=18",
     "react-native": ">=0.74",
-    "react-native-reanimated": ">=3.0.0",
-    "expo-modules-core": "*"
+    "react-native-reanimated": ">=3.0.0"
   },
   "peerDependenciesMeta": {
     "expo-asset": {
@@ -58,10 +59,10 @@
   "devDependencies": {
     "@shopify/react-native-skia": "^2.2.12",
     "@types/react": "^19.0.0",
+    "expo-modules-core": "~57.0.3",
     "react": "^19.0.0",
     "react-native": "^0.86.0",
     "react-native-reanimated": "^4.0.0",
-    "typescript": "^5.6.0",
-    "expo-modules-core": "~57.0.3"
+    "typescript": "^5.6.0"
   }
 }

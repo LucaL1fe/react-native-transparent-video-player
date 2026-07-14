@@ -13,6 +13,7 @@ import com.alphamovie.lib.GLTextureView
 
 class TransparentVideoView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   private val onVideoEnd by EventDispatcher()
+  private val onFirstFrame by EventDispatcher()
 
   private val renderer = TransparentVideoRenderer()
   private val textureView = GLTextureView(context).apply {
@@ -61,6 +62,36 @@ class TransparentVideoView(context: Context, appContext: AppContext) : ExpoView(
     attachSurfaceAndMaybePrepare()
   }
 
+  // Staged by the replayNonce prop setter; evaluated in commitProps() after
+  // the whole prop batch (including sourceUri) has been applied.
+  var pendingReplayNonce: Int? = null
+  private var committedReplayNonce: Int? = null
+  private var hasCommittedNonce = false
+
+  // Called from OnViewDidUpdateProps after every prop batch.
+  fun commitProps() {
+    val nonce = pendingReplayNonce
+    // The first committed nonce is the mount value, not a replay request.
+    val nonceChanged = hasCommittedNonce && nonce != committedReplayNonce
+    committedReplayNonce = nonce
+    hasCommittedNonce = true
+    if (nonceChanged) {
+      replay()
+    }
+  }
+
+  // Restart the CURRENT clip from frame 0 (replayNonce prop changed). Only
+  // acts when the loaded media matches sourceUri — if a source change landed
+  // in the same prop batch, setSource's prepare() handles playback.
+  private fun replay() {
+    val p = player ?: return
+    val loaded = p.currentMediaItem?.localConfiguration?.uri?.toString() ?: return
+    if (loaded == sourceUri) {
+      p.seekTo(0)
+      p.playWhenReady = !paused
+    }
+  }
+
   // Main thread only — ExoPlayer is single-threaded by contract.
   private fun attachSurfaceAndMaybePrepare() {
     val uri = sourceUri ?: return
@@ -73,6 +104,12 @@ class TransparentVideoView(context: Context, appContext: AppContext) : ExpoView(
           if (playbackState == Player.STATE_ENDED) {
             onVideoEnd(mapOf())
           }
+        }
+
+        // Fires after every prepare() — i.e. once per source, including
+        // runtime source switches — when the first frame hits the surface.
+        override fun onRenderedFirstFrame() {
+          onFirstFrame(mapOf())
         }
       })
       player = built
